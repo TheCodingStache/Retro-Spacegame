@@ -1,4 +1,0 @@
-#Mon Nov 12 00:14:58 EET 2018
-base.0=/home/dmspallas/spacegame/android/build/intermediates/transforms/dexMerger/debug/0
-path.0=classes.dex
-renamed.0=classes.dex
