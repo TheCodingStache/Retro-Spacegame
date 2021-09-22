@@ -16,12 +16,12 @@ public class ScrollinBackground {
     boolean speedFixed;
 
     public ScrollinBackground() {
-        this.image = new Texture("stars_background.png");
+        this.image = new Texture("map.png");
         this.y1 = 0.0f;
         this.y2 = (float)this.image.getHeight();
         this.speed = 0;
         this.goalSpeed = 80;
-        this.imageScale = (float)(1366 / this.image.getWidth());
+        this.imageScale = (float)(1920 / this.image.getWidth());
         this.speedFixed = true;
     }
 

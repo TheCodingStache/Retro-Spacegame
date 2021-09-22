@@ -4,40 +4,36 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
-public class Explosion
-{
+public class Explosion {
+
     public static final float FRAME_LENGTH = 0.2f;
     public static final int OFFSET = 8;
     public static final int SIZE = 64;
     public static final int IMAGE_SIZE = 32;
-    private static Animation<TextureRegion> anim;
-    float x;
-    float y;
+
+    private static Animation anim = null;
+    float x, y;
     float statetime;
-    public boolean remove;
 
-    public Explosion(final float x, final float y) {
-        this.remove = false;
-        this.x = x - 8.0f;
-        this.y = y - 8.0f;
-        this.statetime = 0.0f;
-        if (Explosion.anim == null) {
-            Explosion.anim = (Animation<TextureRegion>)new Animation(0.2f, (Object[])TextureRegion.split(new Texture("explosion.png"), 32, 32)[0]);
-        }
+    public boolean remove = false;
+
+    public Explosion (float x, float y) {
+        this.x = x - OFFSET;
+        this.y = y - OFFSET;
+        statetime = 0;
+
+        if (anim == null)
+            anim = new Animation(FRAME_LENGTH, TextureRegion.split(new Texture("explosion.png"), IMAGE_SIZE, IMAGE_SIZE)[0]);
     }
 
-    public void update(final float deltatime) {
-        this.statetime += deltatime;
-        if (Explosion.anim.isAnimationFinished(this.statetime)) {
-            this.remove = true;
-        }
+    public void update (float deltatime) {
+        statetime += deltatime;
+        if (anim.isAnimationFinished(statetime))
+            remove = true;
     }
 
-    public void render(final SpriteBatch batch) {
-        batch.draw((TextureRegion)Explosion.anim.getKeyFrame(this.statetime), this.x, this.y, 64.0f, 64.0f);
+    public void render (SpriteBatch batch) {
+        batch.draw((TextureRegion) anim.getKeyFrame(statetime), x, y, SIZE, SIZE);
     }
 
-    static {
-        Explosion.anim = null;
-    }
 }

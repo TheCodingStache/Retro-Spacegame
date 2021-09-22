@@ -1,5 +1,6 @@
 package com.dmspallas.retro.spacegame.Screen;
 
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.Color;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Align;
 import com.dmspallas.retro.spacegame.SpaceGame;
 import com.badlogic.gdx.Screen;
 
@@ -38,47 +40,63 @@ public class GameOverScreen implements Screen
     public void show() {
     }
 
-    public void render(final float delta) {
-        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        Gdx.gl.glClear(16384);
-        this.game.batch.begin();
-        this.game.scrollingBackground.updateAndRender(delta, this.game.batch);
-        this.game.batch.draw(this.gameOverBanner, 508.0f, 671.0f, 350.0f, 100.0f);
-        final GlyphLayout scoreLayout = new GlyphLayout(this.scoreFont, (CharSequence)("Score: \n" + this.score), Color.WHITE, 0.0f, 8, false);
-        final GlyphLayout highscoreLayout = new GlyphLayout(this.scoreFont, (CharSequence)("Highscore: \n" + this.highscore), Color.WHITE, 0.0f, 8, false);
-        this.scoreFont.draw((Batch)this.game.batch, scoreLayout, 683.0f - scoreLayout.width / 2.0f, 656.0f);
-        this.scoreFont.draw((Batch)this.game.batch, highscoreLayout, 683.0f - highscoreLayout.width / 2.0f, 686.0f - scoreLayout.height - 45.0f);
-        final float touchX = this.game.cam.getInputInGameWorld().x;
-        final float touchY = 786.0f - this.game.cam.getInputInGameWorld().y;
-        final GlyphLayout tryAgainLayout = new GlyphLayout(this.scoreFont, (CharSequence)"Try Again");
-        final GlyphLayout mainMenuLayout = new GlyphLayout(this.scoreFont, (CharSequence)"Main Menu");
-        final float tryAgainX = 683.0f - tryAgainLayout.width / 2.0f;
-        final float tryAgainY = 393.0f - tryAgainLayout.height / 2.0f;
-        final float mainMenuX = 683.0f - mainMenuLayout.width / 2.0f;
-        final float mainMenuY = 393.0f - mainMenuLayout.height / 2.0f - tryAgainLayout.height - 15.0f;
-        if (touchX >= tryAgainX && touchX < tryAgainX + tryAgainLayout.width && touchY >= tryAgainY - tryAgainLayout.height && touchY < tryAgainY) {
-            tryAgainLayout.setText(this.scoreFont, (CharSequence)"Try Again", Color.YELLOW, 0.0f, 8, false);
-        }
-        if (touchX >= mainMenuX && touchX < mainMenuX + mainMenuLayout.width && touchY >= mainMenuY - mainMenuLayout.height && touchY < mainMenuY) {
-            mainMenuLayout.setText(this.scoreFont, (CharSequence)"Main Menu", Color.YELLOW, 0.0f, 8, false);
-        }
+    @Override
+    public void render (float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        game.batch.begin();
+
+        game.scrollingBackground.updateAndRender(delta, game.batch);
+
+        game.batch.draw(gameOverBanner, SpaceGame.WIDTH / 2 - BANNER_WIDTH / 2, SpaceGame.HEIGHT - BANNER_HEIGHT - 15, BANNER_WIDTH, BANNER_HEIGHT);
+
+        GlyphLayout scoreLayout = new GlyphLayout(scoreFont, "Score: \n" + score, Color.WHITE, 0, Align.left, false);
+        GlyphLayout highscoreLayout = new GlyphLayout(scoreFont, "Highscore: \n" + highscore, Color.WHITE, 0, Align.left, false);
+        scoreFont.draw(game.batch, scoreLayout, SpaceGame.WIDTH / 2 - scoreLayout.width / 2, SpaceGame.HEIGHT - BANNER_HEIGHT - 15 * 2);
+        scoreFont.draw(game.batch, highscoreLayout, SpaceGame.WIDTH / 2 - highscoreLayout.width / 2, SpaceGame.HEIGHT - BANNER_HEIGHT - scoreLayout.height - 15 * 3);
+
+        float touchX = game.cam.getInputInGameWorld().x, touchY = SpaceGame.HEIGHT - game.cam.getInputInGameWorld().y;
+
+        GlyphLayout tryAgainLayout = new GlyphLayout(scoreFont, "Try Again");
+        GlyphLayout mainMenuLayout = new GlyphLayout(scoreFont, "Main Menu");
+
+        float tryAgainX = SpaceGame.WIDTH / 2 - tryAgainLayout.width /2;
+        float tryAgainY = SpaceGame.HEIGHT / 2 - tryAgainLayout.height / 2;
+        float mainMenuX = SpaceGame.WIDTH / 2 - mainMenuLayout.width /2;
+        float mainMenuY = SpaceGame.HEIGHT / 2 - mainMenuLayout.height / 2 - tryAgainLayout.height - 15;
+
+        //Checks if hovering over try again button
+        if (touchX >= tryAgainX && touchX < tryAgainX + tryAgainLayout.width && touchY >= tryAgainY - tryAgainLayout.height && touchY < tryAgainY)
+            tryAgainLayout.setText(scoreFont, "Try Again", Color.YELLOW, 0, Align.left, false);
+
+        //Checks if hovering over main menu button
+        if (touchX >= mainMenuX && touchX < mainMenuX + mainMenuLayout.width && touchY >= mainMenuY - mainMenuLayout.height && touchY < mainMenuY)
+            mainMenuLayout.setText(scoreFont, "Main Menu", Color.YELLOW, 0, Align.left, false);
+
+        //If try again and main menu is being pressed
         if (Gdx.input.isTouched()) {
+            //Try again
             if (touchX > tryAgainX && touchX < tryAgainX + tryAgainLayout.width && touchY > tryAgainY - tryAgainLayout.height && touchY < tryAgainY) {
                 this.dispose();
-                this.game.batch.end();
-                this.game.setScreen((Screen)new MainGameScreen(this.game));
+                game.batch.end();
+                game.setScreen(new MainGameScreen(game));
                 return;
             }
+
+            //main menu
             if (touchX > mainMenuX && touchX < mainMenuX + mainMenuLayout.width && touchY > mainMenuY - mainMenuLayout.height && touchY < mainMenuY) {
                 this.dispose();
-                this.game.batch.end();
-                this.game.setScreen((Screen)new Menu(this.game));
+                game.batch.end();
+                game.setScreen(new Menu(game));
                 return;
             }
         }
-        this.scoreFont.draw((Batch)this.game.batch, tryAgainLayout, tryAgainX, tryAgainY);
-        this.scoreFont.draw((Batch)this.game.batch, mainMenuLayout, mainMenuX, mainMenuY);
-        this.game.batch.end();
+
+        //Draw buttons
+        scoreFont.draw(game.batch, tryAgainLayout, tryAgainX, tryAgainY);
+        scoreFont.draw(game.batch, mainMenuLayout, mainMenuX, mainMenuY);
+
+        game.batch.end();
     }
 
     public void resize(final int width, final int height) {
